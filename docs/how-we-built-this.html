@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How We Built the Meta Ads Competitor Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a0e1a;
+    --navy2: #0f1629;
+    --navy3: #151d35;
+    --card: #1a2340;
+    --card2: #1f2a4a;
+    --border: #2a3a5c;
+    --accent: #3b82f6;
+    --accent2: #6366f1;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --purple: #8b5cf6;
+    --cyan: #06b6d4;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 24px;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, #1e3a6e 0%, var(--navy) 70%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232a3a5c' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(59,130,246,0.15);
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.5); }
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text2);
+    max-width: 640px;
+    margin-bottom: 56px;
+    position: relative;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-num {
+    font-size: 40px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .hero-stat-label {
+    font-size: 12px;
+    color: var(--text3);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 96px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    font-size: 17px;
+    color: var(--text2);
+    max-width: 600px;
+    margin-bottom: 56px;
+  }
+
+  /* ── PIPELINE FLOW ── */
+  .pipeline {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    margin: 0 auto;
+  }
+
+  .pipeline-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .pipeline-step {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+
+  .pipeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 28px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--border), var(--accent));
+    z-index: 0;
+  }
+
+  .step-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .step-sub {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .card:hover {
+    border-color: rgba(59,130,246,0.4);
+    transform: translateY(-2px);
+  }
+
+  .card-accent-blue::before { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
+  .card-accent-purple::before { background: linear-gradient(90deg, var(--purple), var(--accent2)); }
+  .card-accent-green::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+  .card-accent-yellow::before { background: linear-gradient(90deg, var(--yellow), #f97316); }
+  .card-accent-red::before { background: linear-gradient(90deg, var(--red), #ec4899); }
+  .card-accent-cyan::before { background: linear-gradient(90deg, var(--cyan), var(--accent)); }
+
+  .card-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .card-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .card-body {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  .card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 20px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── FINDINGS ── */
+  .findings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .finding {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .finding:hover { border-color: rgba(99,102,241,0.4); }
+
+  .finding-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .finding-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .finding-body {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #93c5fd;
+    overflow-x: auto;
+    line-height: 1.8;
+    margin: 20px 0;
+  }
+
+  .code-comment { color: var(--text3); }
+  .code-green { color: var(--green); }
+  .code-yellow { color: var(--yellow); }
+  .code-purple { color: #c084fc; }
+
+  /* ── DECISIONS ── */
+  .decisions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .decision {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .decision:hover { border-color: rgba(59,130,246,0.3); }
+
+  .decision-check {
+    width: 28px; height: 28px;
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--green);
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .decision-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .decision-body {
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  /* ── SHEET COLUMNS ── */
+  .columns-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .columns-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--navy3);
+    color: var(--text3);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .columns-table th:first-child { border-radius: 10px 0 0 0; }
+  .columns-table th:last-child { border-radius: 0 10px 0 0; }
+
+  .columns-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(42,58,92,0.5);
+    color: var(--text2);
+  }
+
+  .columns-table tr:last-child td { border-bottom: none; }
+  .columns-table tr:hover td { background: rgba(26,35,64,0.6); }
+
+  .col-name {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--cyan);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  /* ── GLOSSARY ── */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .glossary-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    transition: border-color 0.2s;
+  }
+
+  .glossary-item:hover { border-color: rgba(139,92,246,0.4); }
+
+  .glossary-term {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+
+  .glossary-def {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ── SETUP STEPS ── */
+  .setup-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .setup-steps::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: 40px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--purple));
+  }
+
+  .setup-step {
+    display: flex;
+    gap: 24px;
+    padding: 24px 0;
+    align-items: flex-start;
+  }
+
+  .setup-num {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 0 4px var(--navy);
+  }
+
+  .setup-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  .setup-body {
+    font-size: 14px;
+    color: var(--text2);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 24px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text3);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── SCROLL NAV ── */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-weight: 800;
+    font-size: 15px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight {
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--text2);
+    margin: 20px 0;
+    line-height: 1.7;
+  }
+
+  .highlight strong { color: var(--text); }
+
+  @media (max-width: 768px) {
+    .pipeline-steps { flex-direction: column; align-items: flex-start; }
+    .pipeline-step::after { display: none; }
+    .nav-links { display: none; }
+    .hero-stats { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">Meta Ads Tracker</div>
+  <ul class="nav-links">
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#pieces">The Pieces</a></li>
+    <li><a href="#findings">Findings</a></li>
+    <li><a href="#sheet">The Sheet</a></li>
+    <li><a href="#setup">Setup</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Georgian Publishing Market Intelligence
+  </div>
+  <h1>How We Built the<br>Meta Ads Tracker</h1>
+  <p class="hero-sub">A fully automated competitor intelligence system that pulls every ad your competitors run on Facebook &amp; Instagram — without manual browsing, copy-pasting, or stale screenshots.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">6</div>
+      <div class="hero-stat-label">Competitors tracked</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">&lt;3m</div>
+      <div class="hero-stat-label">Full scan time</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">18</div>
+      <div class="hero-stat-label">Data columns</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">/scan</div>
+      <div class="hero-stat-label">One command</div>
+    </div>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="section-label">System Design</div>
+  <h2 class="section-title">How it flows</h2>
+  <p class="section-desc">Every piece has one job. Nothing is hardcoded together.</p>
+
+  <div class="pipeline">
+    <div class="pipeline-steps">
+
+      <div class="pipeline-step">
+        <div class="step-icon" style="background:rgba(59,130,246,0.15);">⌨️</div>
+        <div class="step-title">/scan</div>
+        <div class="step-sub">Claude Code<br>slash command</div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-icon" style="background:rgba(99,102,241,0.15);">🤖</div>
+        <div class="step-title">AI Agent</div>
+        <div class="step-sub">meta-ads-analyst<br>subagent</div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-icon" style="background:rgba(6,182,212,0.15);">🕷️</div>
+        <div class="step-title">fetch_ads.py</div>
+        <div class="step-sub">Apify cloud<br>scraper</div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-icon" style="background:rgba(245,158,11,0.15);">📊</div>
+        <div class="step-title">update_sheet.py</div>
+        <div class="step-sub">Google Sheets<br>+ diff JSON</div>
+      </div>
+
+      <div class="pipeline-step">
+        <div class="step-icon" style="background:rgba(16,185,129,0.15);">📝</div>
+        <div class="step-title">Report</div>
+        <div class="step-sub">reports/<br>2026-05-14.md</div>
+      </div>
+
+    </div>
+
+    <div class="code-block" style="margin-top:32px;">
+<span class="code-comment"># The data path</span>
+<span class="code-green">Meta Ad Library</span>  →  <span class="code-yellow">Apify (headless browser)</span>  →  <span class="code-purple">data/{timestamp}.json</span>
+                                                    ↓
+<span class="code-green">Google Sheet</span>  ←  <span class="code-yellow">update_sheet.py</span>  ←  <span class="code-purple">normalized ad objects</span>
+      ↓
+<span class="code-green">latest_diff.json</span>  →  <span class="code-yellow">AI analyst reads</span>  →  <span class="code-purple">reports/{date}.md</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- THE PIECES -->
+<section id="pieces">
+  <div class="section-label">Components</div>
+  <h2 class="section-title">The six pieces</h2>
+  <p class="section-desc">Each component is independent and has a single responsibility.</p>
+
+  <div class="cards-grid">
+
+    <div class="card card-accent-blue">
+      <div class="card-num">Piece 01</div>
+      <span class="card-icon">☁️</span>
+      <div class="card-title">Apify — The Data Fetcher</div>
+      <div class="card-body">
+        Meta's Ad Library is a React app — a normal HTTP request returns empty HTML. You need a real browser running JavaScript. Apify runs a headless Chrome in the cloud, handles IP rotation so Meta doesn't rate-limit you, and returns clean structured JSON.<br><br>
+        We use <strong>apify/facebook-ads-scraper</strong> — Apify's own officially maintained actor. Their team fixes it when Meta changes the page structure. Not us.
+      </div>
+      <div class="card-tag">apify/facebook-ads-scraper</div>
+    </div>
+
+    <div class="card card-accent-cyan">
+      <div class="card-num">Piece 02</div>
+      <span class="card-icon">🐍</span>
+      <div class="card-title">Python Scripts</div>
+      <div class="card-body">
+        <strong>fetch_ads.py</strong> — reads YAML config, builds Ad Library URLs from page IDs, calls Apify, normalizes camelCase → snake_case, writes timestamped JSON.<br><br>
+        <strong>update_sheet.py</strong> — append-only history: new ads get appended, existing ads get <code>last_seen</code> updated, retired ads get flagged. Writes <code>latest_diff.json</code>.<br><br>
+        <strong>format_sheet.py</strong> — one batch of formatting requests: navy headers, alternating rows, green/red for active status. Idempotent.
+      </div>
+      <div class="card-tag">3 scripts, 1 job each</div>
+    </div>
+
+    <div class="card card-accent-purple">
+      <div class="card-num">Piece 03</div>
+      <span class="card-icon">🤖</span>
+      <div class="card-title">Claude Code Integration</div>
+      <div class="card-body">
+        <strong>/scan</strong> is a custom slash command defined in <code>.claude/commands/scan.md</code>. It delegates all work to the <code>meta-ads-analyst</code> subagent — a separate Claude instance with its own tool calls and context.<br><br>
+        The subagent reads <code>latest_diff.json</code> (compact summary) — not the raw 126-row JSON. This keeps the AI focused on what changed, not everything that exists.
+      </div>
+      <div class="card-tag">.claude/agents/meta-ads-analyst.md</div>
+    </div>
+
+    <div class="card card-accent-green">
+      <div class="card-num">Piece 04</div>
+      <span class="card-icon">📊</span>
+      <div class="card-title">Google Sheet — Append-Only History</div>
+      <div class="card-body">
+        One tab: <code>raw_ads</code>. Every row is one ad. The script never edits old rows — only appends new ones and updates <code>last_seen</code>.<br><br>
+        This gives you a permanent record of every ad every competitor ever ran, when it started, and when it stopped. You can answer "how long did Biblusi run their summer promo last year?" — because that data is never deleted.
+      </div>
+      <div class="card-tag">18 columns · append-only</div>
+    </div>
+
+    <div class="card card-accent-yellow">
+      <div class="card-num">Piece 05</div>
+      <span class="card-icon">🧠</span>
+      <div class="card-title">Intelligence Report</div>
+      <div class="card-body">
+        The report is the product — everything else is infrastructure to produce it. It doesn't list all 126 ads. It identifies what changed, what's working, and what you should study.<br><br>
+        "Palitra L's 57-day subscription explainer is almost certainly profitable" is an inference, not a raw data point. The sheet is for data. The report is for decisions.
+      </div>
+      <div class="card-tag">reports/2026-05-14.md</div>
+    </div>
+
+    <div class="card card-accent-red">
+      <div class="card-num">Piece 06</div>
+      <span class="card-icon">🖥️</span>
+      <div class="card-title">HTML Dashboard</div>
+      <div class="card-body">
+        Static HTML/CSS — no build step, no framework, no server required. Served via Python's built-in HTTP server on port 8080.<br><br>
+        In GitHub Codespaces, make the port public and share the URL: <code>https://{CODESPACE}-8080.app.github.dev/reports/dashboard.html</code>
+      </div>
+      <div class="card-tag">reports/dashboard.html</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FINDINGS -->
+<section id="findings">
+  <div class="section-label">First Scan Results · May 14, 2026</div>
+  <h2 class="section-title">Key findings</h2>
+  <p class="section-desc">What the first scan revealed about the Georgian publishing market.</p>
+
+  <div class="findings-grid">
+
+    <div class="finding">
+      <div class="finding-icon" style="background:rgba(239,68,68,0.15);">📦</div>
+      <div>
+        <div class="finding-title">Biblusi launched Litbox</div>
+        <div class="finding-body">A subscription box (books + lifestyle items), 3 ads live, celebrity endorsement. Direct competitor to Palitra L's subscription funnel.</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-icon" style="background:rgba(16,185,129,0.15);">🏆</div>
+      <div>
+        <div class="finding-title">Palitra L's 57-day ad</div>
+        <div class="finding-body">Most durable ad in the set. Educational hook — "how to sign up" — rather than a discount. At 57 days, it's almost certainly profitable.</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-icon" style="background:rgba(245,158,11,0.15);">⚡</div>
+      <div>
+        <div class="finding-title">Intelekti's 5-hour flash sale</div>
+        <div class="finding-body">Every book for 15 GEL, 15:00–20:00 only. Time-gating mechanic that nobody else in the competitive set uses.</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-icon" style="background:rgba(100,116,139,0.15);">🌑</div>
+      <div>
+        <div class="finding-title">Artanuji is entirely dark</div>
+        <div class="finding-body">Zero active ads. All 7 "new" entries are historical 2021–2024 ads surfacing for the first time in the system.</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-icon" style="background:rgba(139,92,246,0.15);">🇬🇪</div>
+      <div>
+        <div class="finding-title">100% Georgian-language copy</div>
+        <div class="finding-body">Across all 6 competitors, every ad is in Georgian. No English. The market is entirely local-language.</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-icon" style="background:rgba(6,182,212,0.15);">🔍</div>
+      <div>
+        <div class="finding-title">Page IDs are permanent</div>
+        <div class="finding-body">Page names change. The numeric page ID (e.g. <code>204459169625213</code>) never does. All tracking is ID-based, stored in <code>config/advertisers.yaml</code>.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SHEET COLUMNS -->
+<section id="sheet">
+  <div class="section-label">Data Model</div>
+  <h2 class="section-title">The Google Sheet columns</h2>
+  <p class="section-desc">18 columns. Every ad ever run by every competitor, permanently stored.</p>
+
+  <div class="table-wrap">
+    <table class="columns-table">
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>What it means</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">ad_id</td><td>Meta's unique ID for the ad — permanent identifier</td></tr>
+        <tr><td class="col-name">advertiser_slug</td><td>Internal name (biblusi, palitra-l, etc.)</td></tr>
+        <tr><td class="col-name">page_id</td><td>Meta's numeric page ID — never changes</td></tr>
+        <tr><td class="col-name">page_name</td><td>The Facebook page display name</td></tr>
+        <tr><td class="col-name">first_seen</td><td>Date this ad first appeared in a scan — locked forever</td></tr>
+        <tr><td class="col-name">last_seen</td><td>Most recent scan where this ad was observed</td></tr>
+        <tr><td class="col-name">is_active</td><td>TRUE if active now, FALSE if retired</td></tr>
+        <tr><td class="col-name">start_date</td><td>When the advertiser started running this ad</td></tr>
+        <tr><td class="col-name">end_date</td><td>When they stopped (blank if still running)</td></tr>
+        <tr><td class="col-name">ad_format</td><td>image / carousel / video / unknown</td></tr>
+        <tr><td class="col-name">title</td><td>Headline text</td></tr>
+        <tr><td class="col-name">body_text</td><td>Body copy — word-wrapped in the sheet</td></tr>
+        <tr><td class="col-name">cta_text</td><td>Call-to-action button (Shop now, Send message, etc.)</td></tr>
+        <tr><td class="col-name">landing_url</td><td>Where the ad sends the user</td></tr>
+        <tr><td class="col-name">publisher_platforms</td><td>Facebook, Instagram, Messenger, WhatsApp, Threads</td></tr>
+        <tr><td class="col-name">creative_urls</td><td>Direct links to ad images/videos</td></tr>
+        <tr><td class="col-name">is_ai_generated</td><td>Meta's label (not exposed by scraper — always blank)</td></tr>
+        <tr><td class="col-name">run_duration_days</td><td>How many days the ad has been / was running</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- KEY DECISIONS -->
+<section>
+  <div class="section-label">Architecture</div>
+  <h2 class="section-title">Key design decisions</h2>
+  <p class="section-desc">The choices that shaped the system — and why.</p>
+
+  <div class="decisions-list">
+    <div class="decision">
+      <div class="decision-check">✓</div>
+      <div>
+        <div class="decision-title">Page IDs over page URLs</div>
+        <div class="decision-body">IDs are permanent. URLs are not. A publisher can rename their Facebook page tomorrow. The numeric ID assigned when the page was created never changes.</div>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="decision-check">✓</div>
+      <div>
+        <div class="decision-title">Append-only sheet</div>
+        <div class="decision-body">Never lose history. The whole value of the system is the longitudinal record. Overwriting rows means you can't answer "how long did they run that campaign last summer?"</div>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="decision-check">✓</div>
+      <div>
+        <div class="decision-title">Diff JSON as analyst input</div>
+        <div class="decision-body">The subagent reads a compact summary — not 126 raw ad objects. This keeps the AI's context focused on what changed, not everything that exists. Smaller context = sharper analysis.</div>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="decision-check">✓</div>
+      <div>
+        <div class="decision-title">Opinionated reports</div>
+        <div class="decision-body">The sheet shows data. The report makes arguments. "This ad is probably profitable" is more useful to a decision-maker than "this ad has run 57 days."</div>
+      </div>
+    </div>
+    <div class="decision">
+      <div class="decision-check">✓</div>
+      <div>
+        <div class="decision-title">Apify over DIY scraper</div>
+        <div class="decision-body">Outsource the part that breaks when Meta changes things. Own the part that interprets the data. Apify fixes the scraper — we just call their API.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SETUP -->
+<section id="setup">
+  <div class="section-label">Getting Started</div>
+  <h2 class="section-title">Setup in 6 steps</h2>
+  <p class="section-desc">From zero to running your first scan.</p>
+
+  <div class="setup-steps">
+
+    <div class="setup-step">
+      <div class="setup-num">1</div>
+      <div>
+        <div class="setup-title">Install dependencies</div>
+        <div class="code-block">pip install -r requirements.txt</div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-num">2</div>
+      <div>
+        <div class="setup-title">Configure environment</div>
+        <div class="code-block">cp .env.example .env
+<span class="code-comment"># Fill in APIFY_TOKEN, GOOGLE_SHEET_ID, GOOGLE_SERVICE_ACCOUNT_JSON</span></div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-num">3</div>
+      <div>
+        <div class="setup-title">Add competitors to config</div>
+        <div class="setup-body">Edit <code>config/advertisers.yaml</code> — each entry needs a <code>slug</code>, <code>name</code>, and <code>page_url</code>.</div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-num">4</div>
+      <div>
+        <div class="setup-title">Resolve page IDs (one time only)</div>
+        <div class="code-block">python scripts/fetch_ads.py --resolve-only
+<span class="code-comment"># Copy the printed IDs into advertisers.yaml</span></div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-num">5</div>
+      <div>
+        <div class="setup-title">Run first scan manually</div>
+        <div class="code-block">python scripts/fetch_ads.py
+python scripts/update_sheet.py
+python scripts/format_sheet.py   <span class="code-comment"># optional formatting</span></div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="setup-num">6</div>
+      <div>
+        <div class="setup-title">From now on, just use /scan</div>
+        <div class="code-block"><span class="code-green">/scan</span>                    <span class="code-comment"># all competitors</span>
+<span class="code-green">/scan biblusi diogene</span>    <span class="code-comment"># specific ones</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GLOSSARY -->
+<section>
+  <div class="section-label">Reference</div>
+  <h2 class="section-title">Concepts glossary</h2>
+  <p class="section-desc">Plain-language definitions for every technical term in this system.</p>
+
+  <div class="glossary-grid">
+    <div class="glossary-item">
+      <div class="glossary-term">Apify</div>
+      <div class="glossary-def">A cloud platform for web scraping. You call their API, they run a headless browser in the cloud, you get back structured data.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Headless browser</div>
+      <div class="glossary-def">A real web browser (Chrome) running without a visible window, controlled by code. Needed when a site requires JavaScript to render its content.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Actor</div>
+      <div class="glossary-def">Apify's term for a scraper module. <code>apify/facebook-ads-scraper</code> is the actor we use.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Page ID</div>
+      <div class="glossary-def">Meta's permanent numeric identifier for a Facebook page. Never changes even if the page renames itself.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Subagent</div>
+      <div class="glossary-def">A separate Claude instance spawned to handle a specific task. Runs its own tool calls without cluttering the main conversation.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Diff</div>
+      <div class="glossary-def"><code>latest_diff.json</code> — a structured summary of what changed between scans: new ads, retired ads, still-running ads, per advertiser.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Service account</div>
+      <div class="glossary-def">A non-human Google account used for server-to-server API access. Lets Python scripts read/write the Google Sheet without a human login.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">MCP</div>
+      <div class="glossary-def">Model Context Protocol — a protocol that lets Claude connect to external tools and services like browsers, APIs, and databases.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Append-only</div>
+      <div class="glossary-def">A write strategy where old rows are never edited or deleted. Every new piece of data becomes a new row. History is permanent.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="font-weight:700;font-size:15px;margin-bottom:8px;">Meta Ads Competitor Tracker</div>
+  <div>Georgian Publishing Market Intelligence · Built with Claude Code · May 2026</div>
+</footer>
+
+</body>
+</html>

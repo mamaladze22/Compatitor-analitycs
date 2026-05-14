@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Competitor Intelligence Report — 2026-05-14</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 18mm 22mm 18mm;
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-family: 'Inter', sans-serif;
+      font-size: 8pt;
+      color: #94a3b8;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #0f1629;
+    --navy2:   #1a2340;
+    --border:  #2a3a5c;
+    --accent:  #2563eb;
+    --accent2: #4f46e5;
+    --green:   #059669;
+    --red:     #dc2626;
+    --yellow:  #d97706;
+    --purple:  #7c3aed;
+    --cyan:    #0891b2;
+    --text:    #0f172a;
+    --text2:   #475569;
+    --text3:   #94a3b8;
+    --bg:      #ffffff;
+    --bg2:     #f8fafc;
+    --bg3:     #f1f5f9;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5pt;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.65;
+  }
+
+  /* ── COVER PAGE ── */
+  .cover {
+    height: 267mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+    padding: 6mm 0 4mm;
+  }
+
+  .cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .cover-brand {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .cover-date-badge {
+    background: var(--navy);
+    color: #fff;
+    font-size: 8pt;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .cover-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20mm 0 14mm;
+  }
+
+  .cover-eyebrow {
+    font-size: 8.5pt;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+  }
+
+  .cover-title {
+    font-size: 32pt;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .cover-subtitle {
+    font-size: 12pt;
+    color: var(--text2);
+    font-weight: 400;
+    max-width: 130mm;
+    line-height: 1.5;
+    margin-bottom: 28px;
+  }
+
+  .cover-rule {
+    width: 40mm;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    margin-bottom: 28px;
+  }
+
+  .cover-stats {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .cover-stat {
+    padding: 12px 20px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .cover-stat:last-child { border-right: none; }
+
+  .cover-stat-num {
+    font-size: 18pt;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    display: block;
+  }
+
+  .cover-stat-label {
+    font-size: 7pt;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+
+  .cover-bottom-left {
+    font-size: 8pt;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  .cover-bottom-right {
+    font-size: 8pt;
+    color: var(--text3);
+    text-align: right;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .page-header-title {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .page-header-right {
+    font-size: 8pt;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── TL;DR SECTION ── */
+  .tldr-box {
+    background: var(--navy);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+    page-break-inside: avoid;
+  }
+
+  .tldr-label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #60a5fa;
+    margin-bottom: 12px;
+  }
+
+  .tldr-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 9px;
+    color: #e2e8f0;
+    font-size: 9pt;
+    line-height: 1.55;
+    align-items: flex-start;
+  }
+
+  .tldr-item:last-child { margin-bottom: 0; }
+
+  .tldr-bullet {
+    width: 18px;
+    height: 18px;
+    background: rgba(59,130,246,0.2);
+    border: 1px solid rgba(59,130,246,0.4);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 9px;
+    color: #60a5fa;
+    font-weight: 700;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 22px 0 14px;
+    page-break-after: avoid;
+  }
+
+  .section-header-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-title {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  /* ── ADVERTISER CARDS ── */
+  .advertiser-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    page-break-inside: avoid;
+  }
+
+  .advertiser-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .advertiser-name {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+
+  .advertiser-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 7.5pt;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .tag-active { background: #dcfce7; color: #166534; }
+  .tag-dark   { background: #fee2e2; color: #991b1b; }
+  .tag-low    { background: #fef3c7; color: #92400e; }
+  .tag-watch  { background: #ede9fe; color: #5b21b6; }
+
+  .advertiser-body {
+    padding: 12px 14px;
+    background: var(--bg2);
+    font-size: 9pt;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  .advertiser-body strong { color: var(--text); font-weight: 600; }
+
+  .ad-ref {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8pt;
+    color: var(--accent);
+    background: rgba(37,99,235,0.06);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .advertiser-footer {
+    padding: 8px 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    background: var(--bg3);
+  }
+
+  .advertiser-kpi {
+    text-align: center;
+  }
+
+  .kpi-num {
+    font-size: 13pt;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+    display: block;
+  }
+
+  .kpi-label {
+    font-size: 7pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ── PATTERNS SECTION ── */
+  .patterns-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .pattern-item {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 11px 14px;
+    background: var(--bg2);
+    page-break-inside: avoid;
+  }
+
+  .pattern-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pattern-body {
+    font-size: 8.5pt;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ── STUDY ADS ── */
+  .study-card {
+    border-left: 3px solid var(--accent);
+    background: rgba(37,99,235,0.04);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+  }
+
+  .study-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .study-body {
+    font-size: 8.5pt;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+
+  /* ── OPEN QUESTIONS ── */
+  .question-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bg3);
+    page-break-inside: avoid;
+  }
+
+  .question-item:last-child { border-bottom: none; }
+
+  .question-num {
+    width: 22px;
+    height: 22px;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8pt;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .question-title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .question-body {
+    font-size: 8.5pt;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ── COMPETITOR SUMMARY TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin-bottom: 14px;
+    page-break-inside: avoid;
+  }
+
+  th {
+    background: var(--navy);
+    color: #e2e8f0;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--bg3);
+    color: var(--text2);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: var(--bg2); }
+  tr:last-child td { border-bottom: none; }
+
+  td:first-child { font-weight: 600; color: var(--navy); }
+
+  .status-active { color: var(--green); font-weight: 600; }
+  .status-dark   { color: var(--red);   font-weight: 600; }
+  .status-low    { color: var(--yellow); font-weight: 600; }
+
+  /* ── PAGE BREAK ── */
+  .page-break { page-break-before: always; }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid var(--bg3);
+    font-size: 7.5pt;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  /* ── HIGHLIGHT ── */
+  .highlight-box {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 8.5pt;
+    color: #78350f;
+    margin: 12px 0;
+    page-break-inside: avoid;
+  }
+
+  .highlight-box strong { color: #451a03; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     COVER PAGE
+══════════════════════════════════════════════ -->
+<div class="cover">
+
+  <div class="cover-top">
+    <div class="cover-brand">Sulakauri Publishing · Competitive Intelligence</div>
+    <div class="cover-date-badge">May 14, 2026</div>
+  </div>
+
+  <div class="cover-center">
+    <div class="cover-eyebrow">Meta Ads Competitor Scan</div>
+    <div class="cover-title">Georgian Book<br>Market Report</div>
+    <div class="cover-subtitle">A full-competitive-set scan of Meta Ad Library activity across six Georgian publishing advertisers — new launches, durable creatives, and strategic patterns.</div>
+    <div class="cover-rule"></div>
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <span class="cover-stat-num">6</span>
+        <span class="cover-stat-label">Advertisers</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-num">40+</span>
+        <span class="cover-stat-label">Active ads</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-num">218d</span>
+        <span class="cover-stat-label">Longest running</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-num">GE</span>
+        <span class="cover-stat-label">Country scope</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-bottom-left">
+      Produced by Meta Ads Competitor Tracker<br>
+      Source: Meta Ad Library · Apify facebook-ads-scraper<br>
+      Country filter: Georgia (GE) · All ad types
+    </div>
+    <div class="cover-bottom-right">
+      Confidential — Internal Use Only<br>
+      Sulakauri Publishing
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 2 — TL;DR + SUMMARY TABLE
+══════════════════════════════════════════════ -->
+<div class="page-header">
+  <div class="page-header-title">Executive Summary</div>
+  <div class="page-header-right">Competitor Scan · 2026-05-14</div>
+</div>
+
+<!-- TL;DR -->
+<div class="tldr-box">
+  <div class="tldr-label">Five things that matter from this scan</div>
+
+  <div class="tldr-item">
+    <div class="tldr-bullet">1</div>
+    <div><strong style="color:#93c5fd;">Biblusi launched Litbox.</strong> Three ads for a curated book-plus-lifestyle subscription box went live May 13–14. Celebrity endorsement (Mancho Nozadze). Direct competing surface with Palitra L's subscription funnel. New format Sulakauri has no equivalent for.</div>
+  </div>
+  <div class="tldr-item">
+    <div class="tldr-bullet">2</div>
+    <div><strong style="color:#93c5fd;">Palitra L's 218-day subscription explainer is the most durable creative in the set.</strong> A "how to become a website subscriber" video ad (ID 688406637668355) has run since March 18 — 57 days and still active. At that duration it is almost certainly profitable and is the anchor of their acquisition funnel.</div>
+  </div>
+  <div class="tldr-item">
+    <div class="tldr-bullet">3</div>
+    <div><strong style="color:#93c5fd;">Biblusi is the most active tester</strong> with 11 new ads in 30 days across discounts, bundles, a digital catalog, puzzles, games, and now Litbox. Structured parallel tests, not spray-and-pray.</div>
+  </div>
+  <div class="tldr-item">
+    <div class="tldr-bullet">4</div>
+    <div><strong style="color:#93c5fd;">Artanuji has zero currently active ads.</strong> Their seven "new" entries are historical 2021–2024 ads surfacing for the first time. Effectively dark on Meta right now.</div>
+  </div>
+  <div class="tldr-item">
+    <div class="tldr-bullet">5</div>
+    <div><strong style="color:#93c5fd;">Intelekti ran a 5-hour flash sale</strong> — every book for 15 GEL from 15:00–20:00 on May 15. Time-gating urgency mechanic that no other competitor is using.</div>
+  </div>
+</div>
+
+<!-- SUMMARY TABLE -->
+<div class="section-header">
+  <div class="section-title">Competitive Set Overview</div>
+  <div class="section-header-line"></div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Advertiser</th>
+      <th>Status</th>
+      <th>Active Ads</th>
+      <th>Longest Running</th>
+      <th>Primary Mechanic</th>
+      <th>Threat Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Biblusi</td>
+      <td class="status-active">● Active</td>
+      <td>11</td>
+      <td>15 days</td>
+      <td>Discount stack + Litbox launch</td>
+      <td><span class="tag tag-watch">High — Watch</span></td>
+    </tr>
+    <tr>
+      <td>Palitra L</td>
+      <td class="status-active">● Active</td>
+      <td>23</td>
+      <td>218 days</td>
+      <td>Subscription funnel + distributor recruitment</td>
+      <td><span class="tag tag-watch">High — Watch</span></td>
+    </tr>
+    <tr>
+      <td>Intelekti</td>
+      <td class="status-active">● Active</td>
+      <td>2</td>
+      <td>3 days</td>
+      <td>Flash sale + cultural event tie-in</td>
+      <td><span class="tag tag-low">Medium</span></td>
+    </tr>
+    <tr>
+      <td>Diogene</td>
+      <td class="status-active">● Active</td>
+      <td>3</td>
+      <td>0 days</td>
+      <td>Literary editorial recommendation</td>
+      <td><span class="tag tag-low">Low</span></td>
+    </tr>
+    <tr>
+      <td>Moubari</td>
+      <td class="status-low">● Minimal</td>
+      <td>1</td>
+      <td>3 days</td>
+      <td>Free delivery transactional</td>
+      <td><span class="tag tag-low">Low</span></td>
+    </tr>
+    <tr>
+      <td>Artanuji</td>
+      <td class="status-dark">● Dark</td>
+      <td>0</td>
+      <td>—</td>
+      <td>Inactive on Meta</td>
+      <td><span class="tag tag-active">No threat</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer-note">
+  * Palitra L's 23 "active" ads includes historical 2023 entries surfacing for the first time. Genuinely current campaigns are a subset. The 218-day figure reflects distributor recruitment ads (started Oct 2025), not the subscription video. The subscription video has run 57 days.
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3 — PER-ADVERTISER (Biblusi + Palitra L)
+══════════════════════════════════════════════ -->
+<div class="page-break"></div>
+
+<div class="page-header">
+  <div class="page-header-title">Per-Advertiser Analysis</div>
+  <div class="page-header-right">Competitor Scan · 2026-05-14</div>
+</div>
+
+<!-- BIBLUSI -->
+<div class="advertiser-card">
+  <div class="advertiser-header" style="background:#eff6ff;">
+    <div class="advertiser-name">Biblusi</div>
+    <div class="advertiser-meta">
+      <span class="tag tag-watch">High Priority</span>
+      <span class="tag tag-active">11 Active Ads</span>
+    </div>
+  </div>
+  <div class="advertiser-body">
+    Biblusi is running the most diversified ad set in the competitive set this week: 11 active ads across at least four distinct campaign types. The core of their spend is a May-long promotion stack — a <strong>50% off selected books</strong> offer (<span class="ad-ref">1479129720606627</span>, 9 days), a <strong>1+1 deal on Wignebi Batumshi publisher titles</strong> (carousel <span class="ad-ref">2041928350069514</span>, 15 days — highest-run ad in their current set), and a <strong>30% discount on Nonfiction series</strong> (<span class="ad-ref">1454070896734068</span>, "Send message" CTA). The monthly catalog ad (<span class="ad-ref">2290189301509157</span>, linking to a Fliphtml5 digital catalog) is a notable format — a paginated digital catalog as a landing experience rather than a product page.
+    <br><br>
+    <strong>The biggest development is the Litbox launch.</strong> Three ads went live May 13–14 (<span class="ad-ref">1526949895590515</span>, <span class="ad-ref">1298719928898742</span>, <span class="ad-ref">990396406878762</span>), all Georgian-language, all linking to litbox.ge. One features celebrity endorsement from Mancho Nozadze. The hook: <em>"Litbox is a literary guide that combines a book with interesting, practical, and pleasant items."</em> This is a subscription box product — a new revenue stream and loyalty mechanism. At 1 day old, too early to judge traction, but the multi-ad launch push signals a real strategic initiative.
+    <br><br>
+    Also notable: a World Cup Panini sticker collection ad launched today (<span class="ad-ref">2468119000289017</span>) — a seasonal, non-book product category. Biblusi is clearly willing to merchandise adjacent categories.
+  </div>
+  <div class="advertiser-footer">
+    <div class="advertiser-kpi"><span class="kpi-num">11</span><span class="kpi-label">Active ads</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">15d</span><span class="kpi-label">Longest running</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">4+</span><span class="kpi-label">Campaign types</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">3</span><span class="kpi-label">Litbox ads live</span></div>
+  </div>
+</div>
+
+<!-- PALITRA L -->
+<div class="advertiser-card">
+  <div class="advertiser-header" style="background:#f5f3ff;">
+    <div class="advertiser-name">Palitra L</div>
+    <div class="advertiser-meta">
+      <span class="tag tag-watch">High Priority</span>
+      <span class="tag tag-active">23 Active Ads</span>
+    </div>
+  </div>
+  <div class="advertiser-body">
+    Palitra L has by far the largest active ad footprint. However, the majority of their "new" ads in this scan are historical entries from 2023 surfacing for the first time — subscription carousel ads, seasonal discounts, and 1+1 deals from April–November 2023. These should not be read as current campaign activity.
+    <br><br>
+    What is genuinely current and significant: <strong>ad <span class="ad-ref">688406637668355</span></strong>, a "how to become a website subscriber" video explainer, has run from March 18 to May 14 — <strong>57 days and still active.</strong> It walks users through the subscription sign-up flow, targets Facebook only, and uses a "Shop now" CTA to palitral.ge/subscriptions. At nearly two months continuous runtime, this is a proven acquisition driver.
+    <br><br>
+    Their three <strong>"become a book distributor" ads</strong> (<span class="ad-ref">790523250247225</span>, <span class="ad-ref">740351082391746</span>, <span class="ad-ref">1553052555705823</span>, all started October 2025, 218 days) are a supply-side recruitment play — advertising to potential resellers, not readers. No other competitor is replicating this.
+    <br><br>
+    Palitra L is the only competitor confirmed running on <strong>Facebook Messenger as a primary placement</strong> — most of their ads are Facebook/Messenger only, not Instagram.
+  </div>
+  <div class="advertiser-footer">
+    <div class="advertiser-kpi"><span class="kpi-num">23</span><span class="kpi-label">Active ads</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">218d</span><span class="kpi-label">Distributor ads</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">57d</span><span class="kpi-label">Subscription video</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">Msngr</span><span class="kpi-label">Unique placement</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 4 — PER-ADVERTISER (remaining 4)
+══════════════════════════════════════════════ -->
+<div class="page-break"></div>
+
+<div class="page-header">
+  <div class="page-header-title">Per-Advertiser Analysis (continued)</div>
+  <div class="page-header-right">Competitor Scan · 2026-05-14</div>
+</div>
+
+<!-- INTELEKTI -->
+<div class="advertiser-card">
+  <div class="advertiser-header" style="background:#fff7ed;">
+    <div class="advertiser-name">Intelekti</div>
+    <div class="advertiser-meta">
+      <span class="tag tag-low">Medium</span>
+      <span class="tag tag-active">2 Active Ads</span>
+    </div>
+  </div>
+  <div class="advertiser-body">
+    Two active ads. The more interesting (<span class="ad-ref">1690048508797374</span>, launched May 14) is a scarcity/urgency play: every book on intelekti.ge for 15 GEL, but <strong>only from 15:00–20:00 on May 15.</strong> The copy enumerates every device the reader should set a reminder on — phone, laptop, tablet, smartwatch, calendar, sticky notes — ending with a winky face. Playful and very specific. The mechanic creates genuine urgency through <strong>time-gating</strong> rather than quantity-gating. No CTA button, awareness-focused.
+    <br><br>
+    The second ad (<span class="ad-ref">1523676185923885</span>, May 11, 3 days) promotes co-organization of the first-ever <strong>Ibero-American Literary Festival in Tbilisi</strong>, May 11–15, with three new Georgian translations released for the event. Hook: cultural event + new product launch.
+  </div>
+  <div class="advertiser-footer">
+    <div class="advertiser-kpi"><span class="kpi-num">2</span><span class="kpi-label">Active ads</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">5hr</span><span class="kpi-label">Flash sale window</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">15₾</span><span class="kpi-label">Flash sale price</span></div>
+  </div>
+</div>
+
+<!-- DIOGENE -->
+<div class="advertiser-card">
+  <div class="advertiser-header" style="background:#f0fdf4;">
+    <div class="advertiser-name">Diogene</div>
+    <div class="advertiser-meta">
+      <span class="tag tag-low">Low Priority</span>
+      <span class="tag tag-active">3 Active Ads</span>
+    </div>
+  </div>
+  <div class="advertiser-body">
+    Diogene has 3 active ads, all Georgian-language, all using an <strong>editorial/literary-recommendation hook</strong> rather than price. Two ads (<span class="ad-ref">985481200521108</span> and <span class="ad-ref">2566561460425540</span>, both May 14) promote "Crossing the Mangrove Forest" by Maryse Condé by framing it as a companion read for fans of Wuthering Heights — a sophisticated comparative-literature angle. A third promotes the Georgian translation of Julia Cameron's "The Artist's Way" with a world bestseller hook.
+    <br><br>
+    Their longest running ad is 0 days — no ad has durability. Refresh rate of 4 ads in 30 days is moderate and their spend appears low. Not a significant paid-media threat at current levels.
+  </div>
+  <div class="advertiser-footer">
+    <div class="advertiser-kpi"><span class="kpi-num">3</span><span class="kpi-label">Active ads</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">0d</span><span class="kpi-label">Longest running</span></div>
+    <div class="advertiser-kpi"><span class="kpi-num">Editorial</span><span class="kpi-label">Creative angle</span></div>
+  </div>
+</div>
+
+<!-- MOUBARI + ARTANUJI side by side via table -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+
+  <div class="advertiser-card" style="margin-bottom:0;">
+    <div class="advertiser-header" style="background:#fafafa;">
+      <div class="advertiser-name">Moubari</div>
+      <div class="advertiser-meta"><span class="tag tag-low">Low</span></div>
+    </div>
+    <div class="advertiser-body" style="font-size:8.5pt;">
+      One active carousel ad (<span class="ad-ref">2044650799447844</span>, May 11, 3 days). Hook: free delivery on online orders from moubary.com, "Shop now" CTA. Basic transactional push — no seasonal angle, no specific title. Total active count of 1 and a refresh rate of 1 suggests minimal investment. Not a serious paid-media competitor at this time.
+    </div>
+    <div class="advertiser-footer">
+      <div class="advertiser-kpi"><span class="kpi-num">1</span><span class="kpi-label">Active ad</span></div>
+      <div class="advertiser-kpi"><span class="kpi-num">3d</span><span class="kpi-label">Running</span></div>
+    </div>
+  </div>
+
+  <div class="advertiser-card" style="margin-bottom:0;">
+    <div class="advertiser-header" style="background:#fff1f2;">
+      <div class="advertiser-name">Artanuji</div>
+      <div class="advertiser-meta"><span class="tag tag-dark">Dark</span></div>
+    </div>
+    <div class="advertiser-body" style="font-size:8.5pt;">
+      <strong>Zero currently active ads.</strong> The seven entries appearing as "new" are all historical ads from 2021–2024 (Black Friday 2021, Ukraine-war nonfiction 2022, title launches 2023–24) surfacing because this is the first scan. They appear entirely inactive on Meta. Whether this reflects paused budget, organic-only strategy, or a shift to other channels (Google, TikTok) is unknown.
+    </div>
+    <div class="advertiser-footer">
+      <div class="advertiser-kpi"><span class="kpi-num">0</span><span class="kpi-label">Active ads</span></div>
+      <div class="advertiser-kpi"><span class="kpi-num">Dark</span><span class="kpi-label">Status</span></div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 5 — PATTERNS + STUDY + QUESTIONS
+══════════════════════════════════════════════ -->
+<div class="page-break"></div>
+
+<div class="page-header">
+  <div class="page-header-title">Patterns, Insights &amp; Open Questions</div>
+  <div class="page-header-right">Competitor Scan · 2026-05-14</div>
+</div>
+
+<div class="section-header">
+  <div class="section-title">Patterns Across the Set</div>
+  <div class="section-header-line"></div>
+</div>
+
+<div class="patterns-grid">
+  <div class="pattern-item">
+    <div class="pattern-title">🔁 Subscription is the frontier</div>
+    <div class="pattern-body">Palitra L has been building a subscription funnel for at least two years. Biblusi just launched a subscription box this week. No other competitor has this. Sulakauri has no subscription product visible in this scan.</div>
+  </div>
+  <div class="pattern-item">
+    <div class="pattern-title">🎁 1+1 bundles dominate promos</div>
+    <div class="pattern-body">Biblusi runs a 1+1 on Wignebi Batumshi titles; Palitra L ran many 1+1 carousels historically. It is the standard promotional mechanic of the Georgian book market.</div>
+  </div>
+  <div class="pattern-item">
+    <div class="pattern-title">🇬🇪 100% Georgian-language copy</div>
+    <div class="pattern-body">Not a single English-primary ad across all six competitors. The Georgian-speaking parent/reader is the universal target. English copy has no role in paid acquisition in this market.</div>
+  </div>
+  <div class="pattern-item">
+    <div class="pattern-title">⏱️ Scarcity mechanics are underused</div>
+    <div class="pattern-body">Intelekti's 5-hour flash sale is the only pure urgency play in the set. Biblusi uses "month-end" framing but that is a soft deadline. Clear opening for more aggressive scarcity mechanics.</div>
+  </div>
+  <div class="pattern-item">
+    <div class="pattern-title">🖼️ Format diversity is low</div>
+    <div class="pattern-body">Most ads are single-image or format-unknown. Biblusi uses carousels for the 1+1 promotion. Nobody is running video creatives in current active ads except Palitra L's 57-day subscription explainer.</div>
+  </div>
+  <div class="pattern-item">
+    <div class="pattern-title">📡 Messenger placement is unique</div>
+    <div class="pattern-body">Palitra L is the only competitor confirmed running on Facebook Messenger as a primary placement. Most competitors target Facebook/Instagram. An unusual placement worth investigating.</div>
+  </div>
+</div>
+
+<div class="section-header">
+  <div class="section-title">Ads Worth Studying</div>
+  <div class="section-header-line"></div>
+</div>
+
+<div class="study-card">
+  <div class="study-title">
+    <span class="ad-ref">688406637668355</span>
+    Palitra L — Subscription Explainer Video (57 days)
+  </div>
+  <div class="study-body">
+    The most durable creative in the competitive set. It teaches the audience a process (how to sign up) rather than making a discount offer. The hook is educational, not promotional. If it has run 57 days it is converting. Worth pulling apart: what does the video show, what sign-up friction does it overcome, and why does Facebook-only placement work for this message when Instagram is absent?
+  </div>
+</div>
+
+<div class="study-card">
+  <div class="study-title">
+    <span class="ad-ref">2041928350069514</span>
+    Biblusi — 1+1 Wignebi Batumshi Carousel (15 days)
+  </div>
+  <div class="study-body">
+    The longest-running Biblusi creative in this scan, deployed across Facebook/Instagram/Audience Network/WhatsApp/Threads — the widest platform set. The headline framing — "for Biblusi's loyal readers" — is a social proof/loyalty hook rather than a raw discount hook. 15 days is enough to call this a winner in Biblusi's portfolio. Multi-image carousel format with at least 3 frames.
+  </div>
+</div>
+
+<div class="section-header">
+  <div class="section-title">Open Questions for Next Scan</div>
+  <div class="section-header-line"></div>
+</div>
+
+<div class="question-item">
+  <div class="question-num">1</div>
+  <div>
+    <div class="question-title">Litbox traction</div>
+    <div class="question-body">The Litbox launch is 1 day old. Is this a soft launch or a full push? Monitor over the next 7–14 days. If the ads scale, Biblusi has a subscription product that directly competes with Palitra L. If they go dark, it was a test.</div>
+  </div>
+</div>
+
+<div class="question-item">
+  <div class="question-num">2</div>
+  <div>
+    <div class="question-title">Artanuji's status</div>
+    <div class="question-body">Are they entirely off Meta, running only organically, or shifted to another channel (Google, TikTok)? The complete absence of active ads is unusual for a publisher running campaigns as recently as January 2024.</div>
+  </div>
+</div>
+
+<div class="question-item">
+  <div class="question-num">3</div>
+  <div>
+    <div class="question-title">Palitra L's distributor network</div>
+    <div class="question-body">Three ads recruiting "book distributors" have run since October 2025 (218 days). What is the model — MLM-style resellers or retail channel partners? If it is working at 218-day duration, it represents a distribution moat competitors are not building.</div>
+  </div>
+</div>
+
+<div class="question-item">
+  <div class="question-num">4</div>
+  <div>
+    <div class="question-title">Intelekti's flash sale result</div>
+    <div class="question-body">The May 15 flash sale (15:00–20:00) will have concluded. Did they run a follow-up ad? What was the volume impact? Worth manually checking their page or website on May 16 to see if a post-sale ad appeared.</div>
+  </div>
+</div>
+
+<div class="question-item">
+  <div class="question-num">5</div>
+  <div>
+    <div class="question-title">Diogene's platform mix</div>
+    <div class="question-body">Their active ads are Facebook and Instagram only — no Audience Network or WhatsApp. Is this intentional targeting or budget constraint? Their literary-hook copy may skew toward older Facebook demographics rather than Instagram.</div>
+  </div>
+</div>
+
+<div class="footer-note">
+  Data source: Meta Ad Library via Apify facebook-ads-scraper · Country: Georgia (GE) · Scan timestamp: 2026-05-14 ·
+  All ad IDs reference Meta's internal ad archive identifiers and can be verified at facebook.com/ads/library ·
+  Run duration calculated from start_date to scan date · Historical ads are entries from prior periods surfacing in the system for the first time.
+</div>
+
+</body>
+</html>

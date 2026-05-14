@@ -1,0 +1,66 @@
+# Tracked competitors. Page IDs are source of truth — names change, IDs don't.
+#
+# To populate page_id for a new entry:
+#   1. Open the Page URL in browser
+#   2. Visit https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=GE
+#   3. Search the brand and copy the page_id from the URL bar (view_all_page_id=...)
+#   OR run: python scripts/fetch_ads.py --resolve-only
+#
+# slug is a stable internal identifier used in the Sheet and reports. Use
+# kebab-case, lowercase ASCII only.
+
+advertisers:
+  - slug: biblusi
+    name: "Biblusi"
+    native_name: "ბიბლუსი"
+    page_url: "https://www.facebook.com/biblusi.ge"
+    page_id: "176611737863"
+    category: bookstore
+    notes: "Major bookstore chain. Strong retail presence, broad book catalog."
+
+  - slug: diogene
+    name: "Diogene Publishers"
+    native_name: "გამომცემლობა დიოგენე"
+    page_url: "https://www.facebook.com/diogenepublishers"
+    page_id: "117380871679855"
+    category: publisher
+    notes: "Adult/literary fiction publisher. Direct competitor on adult titles."
+
+  - slug: palitra-l
+    name: "Palitra L Publishing"
+    native_name: "გამომცემლობა პალიტრა L"
+    page_url: "https://www.facebook.com/Palitra.L.Publishing"
+    page_id: "204459169625213"
+    category: publisher
+    notes: "Large general publisher. Children's books, adult fiction, non-fiction. Direct competitor across our full range."
+
+  - slug: intelekti
+    name: "Intelekti Publishing"
+    native_name: "გამომცემლობა ინტელექტი"
+    page_url: "https://www.facebook.com/GamomtsemlobaIntelekti"
+    page_id: "134428423383549"
+    category: publisher
+    notes: "Mid-size publisher. Watch for educational/non-fiction overlap."
+
+  - slug: moubari
+    name: "Moubari"
+    native_name: "მოუბარი"
+    page_url: "https://www.facebook.com/moubarybooks"
+    page_id: "799944616539043"
+    category: bookstore
+    notes: "Bookstore competitor."
+
+  - slug: artanuji
+    name: "Artanuji Publishing"
+    native_name: "გამომცემლობა არტანუჯი"
+    page_url: "https://www.facebook.com/GamomtsemlobaArtanuji"
+    page_id: "125031254330758"
+    category: publisher
+    notes: "Smaller publisher, watch for niche overlap."
+
+# Default scan parameters
+defaults:
+  country: GE
+  ad_type: all          # all | political_and_issue_ads
+  active_status: all    # all | active | inactive
+  max_ads_per_advertiser: 100

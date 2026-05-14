@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitive Intelligence — Sulakauri Publishing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #080a10;
+    --surface:   #0f1117;
+    --surface2:  #151821;
+    --border:    #1d2130;
+    --border2:   #252a3a;
+    --indigo:    #6366f1;
+    --indigo-d:  #4f52d4;
+    --indigo-bg: rgba(99,102,241,.10);
+    --green:     #22c55e;
+    --green-bg:  rgba(34,197,94,.10);
+    --amber:     #f59e0b;
+    --amber-bg:  rgba(245,158,11,.10);
+    --red:       #ef4444;
+    --red-bg:    rgba(239,68,68,.10);
+    --cyan:      #06b6d4;
+    --cyan-bg:   rgba(6,182,212,.10);
+    --violet:    #a78bfa;
+    --text:      #e8eaf2;
+    --text2:     #8b91a8;
+    --text3:     #555d78;
+    --mono:      'JetBrains Mono', monospace;
+    --sans:      'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(180deg, #0d0f1a 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-pill {
+    background: var(--indigo);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+  .header-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .header-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 24px; }
+  .scan-badge {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; color: var(--text2);
+  }
+  .scan-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .country-tag {
+    font-size: 11px; font-weight: 600; letter-spacing:.05em;
+    padding: 3px 9px; border-radius: 4px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    color: var(--text2);
+  }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 1400px; margin: 0 auto; padding: 36px 40px 0; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--text3);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .kpi:hover { border-color: var(--border2); }
+  .kpi::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .kpi.indigo::before  { background: linear-gradient(90deg,var(--indigo),#818cf8); }
+  .kpi.green::before   { background: linear-gradient(90deg,var(--green),#4ade80); }
+  .kpi.amber::before   { background: linear-gradient(90deg,var(--amber),#fbbf24); }
+  .kpi.red::before     { background: linear-gradient(90deg,var(--red),#f87171); }
+  .kpi.cyan::before    { background: linear-gradient(90deg,var(--cyan),#22d3ee); }
+  .kpi-label { font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing:.04em; margin-bottom: 10px; }
+  .kpi-value { font-size: 34px; font-weight: 800; line-height: 1; color: var(--text); }
+  .kpi-sub   { font-size: 11.5px; color: var(--text2); margin-top: 8px; }
+  .kpi-icon  {
+    position: absolute; right: 18px; top: 18px;
+    font-size: 22px; opacity: .18;
+  }
+
+  /* ── MAIN GRID ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+    margin-bottom: 24px;
+    align-items: start;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .card-meta  { font-size: 11px; color: var(--text3); }
+  .card-body  { padding: 0; }
+
+  /* ── ADVERTISER TABLE ── */
+  .adv-table { width: 100%; border-collapse: collapse; }
+  .adv-table th {
+    font-size: 10px; font-weight: 600; letter-spacing:.08em;
+    text-transform: uppercase; color: var(--text3);
+    padding: 10px 24px;
+    text-align: left;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .adv-table th:not(:first-child) { text-align: center; }
+  .adv-row { border-bottom: 1px solid var(--border); transition: background .15s; }
+  .adv-row:last-child { border-bottom: none; }
+  .adv-row:hover { background: var(--surface2); }
+  .adv-table td { padding: 14px 24px; vertical-align: middle; }
+  .adv-table td:not(:first-child) { text-align: center; }
+
+  .adv-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .adv-native { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .adv-cat {
+    font-size: 9.5px; font-weight: 600; letter-spacing:.06em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 4px; margin-top: 5px; display: inline-block;
+  }
+  .cat-publisher { background: var(--indigo-bg); color: var(--indigo); }
+  .cat-bookstore  { background: var(--cyan-bg);   color: var(--cyan);   }
+
+  .num { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); }
+  .num-muted { color: var(--text3); }
+
+  .status-pill {
+    font-size: 10px; font-weight: 700; letter-spacing:.06em; text-transform:uppercase;
+    padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+  }
+  .status-dominant  { background: var(--indigo-bg); color: var(--indigo); }
+  .status-active    { background: var(--green-bg);  color: var(--green);  }
+  .status-watch     { background: var(--amber-bg);  color: var(--amber);  }
+  .status-dark      { background: var(--red-bg);    color: var(--red);    }
+  .status-minimal   { background: rgba(107,114,128,.15); color: #6b7280; }
+
+  /* run bar */
+  .run-bar-wrap { display: flex; align-items: center; gap: 10px; }
+  .run-bar-track {
+    flex: 1; height: 5px; background: var(--border2); border-radius: 99px;
+    min-width: 60px;
+  }
+  .run-bar-fill { height: 100%; border-radius: 99px; }
+  .run-bar-label { font-family: var(--mono); font-size: 11px; color: var(--text2); width: 40px; text-align: right; }
+
+  /* ── ALERTS PANEL ── */
+  .alerts-list { display: flex; flex-direction: column; gap: 0; }
+  .alert-item {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 13px; align-items: flex-start;
+    transition: background .15s;
+  }
+  .alert-item:last-child { border-bottom: none; }
+  .alert-item:hover { background: var(--surface2); }
+  .alert-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .ai-red    { background: var(--red-bg); }
+  .ai-amber  { background: var(--amber-bg); }
+  .ai-green  { background: var(--green-bg); }
+  .ai-indigo { background: var(--indigo-bg); }
+  .ai-cyan   { background: var(--cyan-bg); }
+  .alert-body { flex: 1; min-width: 0; }
+  .alert-tag {
+    font-size: 9.5px; font-weight: 700; letter-spacing:.08em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .tag-red    { color: var(--red); }
+  .tag-amber  { color: var(--amber); }
+  .tag-green  { color: var(--green); }
+  .tag-indigo { color: var(--indigo); }
+  .tag-cyan   { color: var(--cyan); }
+  .alert-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .alert-desc  { font-size: 11.5px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
+
+  /* ── RUN DURATION BAR CHART ── */
+  .duration-card { margin-bottom: 24px; }
+  .duration-chart { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .dur-row { display: flex; align-items: center; gap: 16px; }
+  .dur-name { width: 130px; font-size: 12px; font-weight: 500; color: var(--text2); text-align: right; flex-shrink: 0; }
+  .dur-track {
+    flex: 1; height: 28px; background: var(--surface2);
+    border-radius: 6px; overflow: hidden; position: relative;
+    border: 1px solid var(--border);
+  }
+  .dur-fill {
+    height: 100%; border-radius: 5px;
+    display: flex; align-items: center; padding-left: 12px;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    white-space: nowrap; transition: width .6s ease;
+  }
+  .dur-fill.palitra  { background: linear-gradient(90deg, #4f52d4, #6366f1); color: #c7d2fe; }
+  .dur-fill.biblusi  { background: linear-gradient(90deg, #065f46, #059669); color: #a7f3d0; }
+  .dur-fill.artanuji { background: linear-gradient(90deg, #1e1b4b, #312e81); color: #a5b4fc; }
+  .dur-fill.moubari  { background: linear-gradient(90deg, #164e63, #0e7490); color: #a5f3fc; }
+  .dur-fill.intelekti{ background: linear-gradient(90deg, #78350f, #b45309); color: #fde68a; }
+  .dur-fill.diogene  { background: linear-gradient(90deg, #1f2937, #374151); color: #9ca3af; }
+  .dur-zero {
+    height: 100%; border-radius: 5px; width: 2px;
+    background: var(--border2); display: flex; align-items: center;
+  }
+  .dur-label {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+    color: var(--text3); width: 60px; flex-shrink: 0;
+  }
+
+  /* ── BOTTOM GRID ── */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 0;
+  }
+
+  /* ── STUDY CARDS ── */
+  .study-list { display: flex; flex-direction: column; gap: 0; }
+  .study-item {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .study-item:last-child { border-bottom: none; }
+  .study-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .study-id {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    background: var(--surface2); border: 1px solid var(--border2);
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .study-duration {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  }
+  .dur-long  { background: var(--green-bg);  color: var(--green); }
+  .dur-med   { background: var(--amber-bg);  color: var(--amber); }
+  .study-advertiser { font-size: 12px; font-weight: 700; color: var(--indigo); margin-bottom: 4px; }
+  .study-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+  .study-why { font-size: 11.5px; color: var(--text2); line-height: 1.6; }
+  .study-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .t-sub   { background: var(--indigo-bg); color: var(--indigo); }
+  .t-vid   { background: var(--violet-bg, rgba(167,139,250,.12)); color: var(--violet); }
+  .t-edu   { background: var(--cyan-bg); color: var(--cyan); }
+  .t-1plus1{ background: var(--green-bg); color: var(--green); }
+  .t-caro  { background: var(--amber-bg); color: var(--amber); }
+  .t-loyal { background: rgba(245,158,11,.1); color: var(--amber); }
+
+  /* ── OPEN QUESTIONS ── */
+  .questions-list { display: flex; flex-direction: column; gap: 0; }
+  .q-item {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .q-item:last-child { border-bottom: none; }
+  .q-num {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    color: var(--text3); width: 20px; flex-shrink: 0; padding-top: 2px;
+  }
+  .q-content {}
+  .q-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .q-desc  { font-size: 11.5px; color: var(--text2); line-height: 1.55; }
+  .q-action {
+    font-size: 10.5px; font-weight: 600; color: var(--indigo);
+    margin-top: 6px; letter-spacing: .03em;
+  }
+
+  /* ── PATTERNS ROW ── */
+  .patterns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .pattern-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    position: relative; overflow: hidden;
+  }
+  .pattern-card::after {
+    content: attr(data-emoji);
+    position: absolute; right: 14px; bottom: 10px;
+    font-size: 32px; opacity: .12;
+  }
+  .pattern-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 10px;
+  }
+  .pattern-title { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
+  .pattern-body  { font-size: 11.5px; color: var(--text2); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; padding: 40px 0 0;
+    font-size: 11px; color: var(--text3);
+  }
+  .footer span { color: var(--text2); }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .5s ease, transform .5s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo-pill">CI</div>
+    <div>
+      <div class="header-title">Sulakauri Publishing — Competitive Intelligence</div>
+      <div class="header-sub">Meta Ad Library · Georgian Publishing Market</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="scan-badge">
+      <div class="scan-dot"></div>
+      Scan completed · 2026-05-14
+    </div>
+    <div class="country-tag">🇬🇪 GE</div>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- KPI ROW -->
+  <div class="section-label reveal">Key metrics</div>
+  <div class="kpi-grid reveal">
+    <div class="kpi indigo">
+      <div class="kpi-label">Total Ads Captured</div>
+      <div class="kpi-value">126</div>
+      <div class="kpi-sub">6 advertisers · first baseline scan</div>
+      <div class="kpi-icon">📦</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Active Advertisers</div>
+      <div class="kpi-value">5<span style="font-size:20px;font-weight:400;color:var(--text3)">/6</span></div>
+      <div class="kpi-sub">Artanuji entirely dark on Meta</div>
+      <div class="kpi-icon">📡</div>
+    </div>
+    <div class="kpi amber">
+      <div class="kpi-label">Most Active · 30d</div>
+      <div class="kpi-value">91</div>
+      <div class="kpi-sub">Palitra L new ads in trailing 30 days</div>
+      <div class="kpi-icon">🔥</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Longest Running Ad</div>
+      <div class="kpi-value">218<span style="font-size:16px;font-weight:400;color:var(--text3)"> d</span></div>
+      <div class="kpi-sub">Palitra L distributor recruitment</div>
+      <div class="kpi-icon">⏱</div>
+    </div>
+    <div class="kpi cyan">
+      <div class="kpi-label">New Products Spotted</div>
+      <div class="kpi-value">1</div>
+      <div class="kpi-sub">Biblusi Litbox subscription box launch</div>
+      <div class="kpi-icon">🚀</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID: Advertiser table + Alerts -->
+  <div class="section-label reveal">Advertiser activity</div>
+  <div class="main-grid reveal">
+
+    <!-- ADVERTISER TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Activity Matrix</div>
+        <div class="card-meta">All active ads · country=GE · max 100/advertiser</div>
+      </div>
+      <div class="card-body">
+        <table class="adv-table">
+          <thead>
+            <tr>
+              <th>Advertiser</th>
+              <th>Active Ads</th>
+              <th>Refresh / 30d</th>
+              <th>Longest Run</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Palitra L -->
+            <tr class="adv-row">
+              <td>
+                <div class="adv-name">Palitra L Publishing</div>
+                <div class="adv-native">გამომცემლობა პალიტრა L</div>
+                <span class="adv-cat cat-publisher">Publisher</span>
+              </td>
+              <td><span class="num">23</span></td>
+              <td><span class="num">91</span></td>
+              <td>
+                <div class="run-bar-wrap">
+                  <div class="run-bar-track">
+                    <div class="run-bar-fill" style="width:100%;background:var(--indigo)"></div>
+                  </div>
+                  <div class="run-bar-label">218d</div>
+                </div>
+              </td>
+              <td><span class="status-pill status-dominant">Dominant</span></td>
+            </tr>
+
+            <!-- Biblusi -->
+            <tr class="adv-row">
+              <td>
+                <div class="adv-name">Biblusi</div>
+                <div class="adv-native">ბიბლუსი</div>
+                <span class="adv-cat cat-bookstore">Bookstore</span>
+              </td>
+              <td><span class="num">11</span></td>
+              <td><span class="num">11</span></td>
+              <td>
+                <div class="run-bar-wrap">
+                  <div class="run-bar-track">
+                    <div class="run-bar-fill" style="width:6.9%;background:var(--green)"></div>
+                  </div>
+                  <div class="run-bar-label">15d</div>
+                </div>
+              </td>
+              <td><span class="status-pill status-active">Active Tester</span></td>
+            </tr>
+
+            <!-- Artanuji -->
+            <tr class="adv-row">
+              <td>
+                <div class="adv-name">Artanuji Publishing</div>
+                <div class="adv-native">გამომცემლობა არტანუჯი</div>
+                <span class="adv-cat cat-publisher">Publisher</span>
+              </td>
+              <td><span class="num num-muted">0</span></td>
+              <td><span class="num num-muted">—</span></td>
+              <td>
+                <div class="run-bar-wrap">
+                  <div class="run-bar-track">
+                    <div class="run-bar-fill" style="width:1.4%;background:var(--red);opacity:.5"></div>
+                  </div>
+                  <div class="run-bar-label" style="color:var(--text3)">3d</div>
+                </div>
+              </td>
+              <td><span class="status-pill status-dark">Dark</span></td>
+            </tr>
+
+            <!-- Diogene -->
+            <tr class="adv-row">
+              <td>
+                <div class="adv-name">Diogene Publishers</div>
+                <div class="adv-native">გამომცემლობა დიოგენე</div>
+                <span class="adv-cat cat-publisher">Publisher</span>
+              </td>
+              <td><span class="num">3</span></td>
+              <td><span class="num">4</span></td>
+              <td>
+                <div class="run-bar-wrap">
+                  <div class="run-bar-track">
+                    <div class="run-bar-fill" style="width:0.5%;background:var(--text3);min-width:3px"></div>
+                  </div>
+                  <div class="run-bar-label" style="color:var(--text3)">0d</div>
+                </div>
+              </td>
+              <td><span class="status-pill status-minimal">Low spend</span></td>
+            </tr>
+
+            <!-- Intelekti -->
+            <tr class="adv-row">
+              <td>
+                <div class="adv-name">Intelekti Publishing</div>
+                <div class="adv-native">გამომცემლობა ინტელექტი</div>
+                <span class="adv-cat cat-publisher">Publisher</span>
+              </td>
+              <td><span class="num">2</span></td>
+              <td><span class="num">3</span></td>
+              <td>
+                <div class="run-bar-wrap">
+                  <div class="run-bar-track">
+                    <div class="run-bar-fill" style="width:1.4%;background:var(--amber);min-width:4px"></div>
+                  </div>
+                  <div class="run-bar-label" style="color:var(--text3)">3d</div>
+                </div>
+              </td>
+              <td><span class="status-pill status-watch">Tactical</span></td>
+            </tr>
+
+            <!-- Moubari -->
+            <tr class="adv-row">
+              <td>
+                <div class="adv-name">Moubari</div>
+                <div class="adv-native">მოუბარი</div>
+                <span class="adv-cat cat-bookstore">Bookstore</span>
+              </td>
+              <td><span class="num">1</span></td>
+              <td><span class="num">1</span></td>
+              <td>
+                <div class="run-bar-wrap">
+                  <div class="run-bar-track">
+                    <div class="run-bar-fill" style="width:1.4%;background:var(--cyan);min-width:4px"></div>
+                  </div>
+                  <div class="run-bar-label" style="color:var(--text3)">3d</div>
+                </div>
+              </td>
+              <td><span class="status-pill status-minimal">Minimal</span></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STRATEGIC ALERTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Strategic Alerts</div>
+        <div class="card-meta">Requires action or monitoring</div>
+      </div>
+      <div class="card-body">
+        <div class="alerts-list">
+
+          <div class="alert-item">
+            <div class="alert-icon ai-red">🚨</div>
+            <div class="alert-body">
+              <div class="alert-tag tag-red">New Threat</div>
+              <div class="alert-title">Biblusi launched Litbox subscription box</div>
+              <div class="alert-desc">3 ads live May 13–14 with celebrity endorsement (Mancho Nozadze). Direct move into subscription revenue — Sulakauri has no equivalent.</div>
+            </div>
+          </div>
+
+          <div class="alert-item">
+            <div class="alert-icon ai-amber">⚠️</div>
+            <div class="alert-body">
+              <div class="alert-tag tag-amber">Watch Creative</div>
+              <div class="alert-title">Palitra L's 57-day subscription explainer is still running</div>
+              <div class="alert-desc">Ad 688406637668355 · educational hook teaching the sign-up flow. 57 days = profitable. Study the format.</div>
+            </div>
+          </div>
+
+          <div class="alert-item">
+            <div class="alert-icon ai-indigo">⚡</div>
+            <div class="alert-body">
+              <div class="alert-tag tag-indigo">Mechanic to Steal</div>
+              <div class="alert-title">Intelekti's 5-hour flash sale is the only urgency play in the set</div>
+              <div class="alert-desc">Every book 15 GEL · 15:00–20:00 only · May 15. Time-gating, not quantity-gating. Nobody else is doing this.</div>
+            </div>
+          </div>
+
+          <div class="alert-item">
+            <div class="alert-icon ai-green">🟢</div>
+            <div class="alert-body">
+              <div class="alert-tag tag-green">Opportunity</div>
+              <div class="alert-title">Artanuji is completely dark on Meta</div>
+              <div class="alert-desc">Zero active ads. Last campaign visible was Jan 2024. Their audience is uncontested — consider targeting overlapping categories.</div>
+            </div>
+          </div>
+
+          <div class="alert-item">
+            <div class="alert-icon ai-cyan">📊</div>
+            <div class="alert-body">
+              <div class="alert-tag tag-cyan">Market Signal</div>
+              <div class="alert-title">100% Georgian-language copy across all 6 competitors</div>
+              <div class="alert-desc">Not a single English-primary ad in the full competitive set. Georgian-speaking parent is the universal target. Confirmed.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RUN DURATION CHART -->
+  <div class="section-label reveal">Run duration · longest active ad per advertiser</div>
+  <div class="card duration-card reveal">
+    <div class="card-header">
+      <div class="card-title">Ad Longevity — Proxy for Profitability</div>
+      <div class="card-meta">60d+ = almost certainly converting · &lt;14d = test or failed</div>
+    </div>
+    <div class="duration-chart">
+
+      <div class="dur-row">
+        <div class="dur-name">Palitra L</div>
+        <div class="dur-track">
+          <div class="dur-fill palitra" style="width:100%">218 days · distributor recruitment</div>
+        </div>
+        <div class="dur-label">218d ✦</div>
+      </div>
+
+      <div class="dur-row">
+        <div class="dur-name">Biblusi</div>
+        <div class="dur-track">
+          <div class="dur-fill biblusi" style="width:6.9%">15d</div>
+        </div>
+        <div class="dur-label">15d</div>
+      </div>
+
+      <div class="dur-row">
+        <div class="dur-name">Artanuji</div>
+        <div class="dur-track">
+          <div class="dur-fill artanuji" style="width:1.4%;min-width:32px">3d</div>
+        </div>
+        <div class="dur-label" style="color:var(--red)">0 active</div>
+      </div>
+
+      <div class="dur-row">
+        <div class="dur-name">Moubari</div>
+        <div class="dur-track">
+          <div class="dur-fill moubari" style="width:1.4%;min-width:32px">3d</div>
+        </div>
+        <div class="dur-label">3d</div>
+      </div>
+
+      <div class="dur-row">
+        <div class="dur-name">Intelekti</div>
+        <div class="dur-track">
+          <div class="dur-fill intelekti" style="width:1.4%;min-width:32px">3d</div>
+        </div>
+        <div class="dur-label">3d</div>
+      </div>
+
+      <div class="dur-row">
+        <div class="dur-name">Diogene</div>
+        <div class="dur-track" style="position:relative">
+          <div class="dur-fill diogene" style="width:0.5%;min-width:4px"></div>
+        </div>
+        <div class="dur-label" style="color:var(--text3)">0d</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PATTERNS -->
+  <div class="section-label reveal">Patterns across the competitive set</div>
+  <div class="patterns-grid reveal">
+
+    <div class="pattern-card" data-emoji="📦">
+      <div class="pattern-label">Subscription Race</div>
+      <div class="pattern-title">Recurring revenue is the competitive frontier</div>
+      <div class="pattern-body">Palitra L has been building a subscription funnel for 2+ years. Biblusi just entered this week with Litbox. Sulakauri has no subscription product. This gap is growing.</div>
+    </div>
+
+    <div class="pattern-card" data-emoji="1️⃣">
+      <div class="pattern-label">Dominant Mechanic</div>
+      <div class="pattern-title">1+1 bundle is the market's standard promotion language</div>
+      <div class="pattern-body">Both Biblusi and Palitra L run 1+1 promotions. It is the default Georgian book market promotional hook — familiar and expected by the audience.</div>
+    </div>
+
+    <div class="pattern-card" data-emoji="⏱">
+      <div class="pattern-label">Untapped Mechanic</div>
+      <div class="pattern-title">Scarcity and urgency are deeply underused</div>
+      <div class="pattern-body">Intelekti's 5-hour flash sale is the only pure urgency play in the entire scan. No other competitor is using time-gating. There is white space here for Sulakauri.</div>
+    </div>
+
+    <div class="pattern-card" data-emoji="🎬">
+      <div class="pattern-label">Format Gap</div>
+      <div class="pattern-title">Video is almost absent — one competitor owns it</div>
+      <div class="pattern-body">Palitra L's subscription explainer video (57 days) is the only durable video creative in the set. Everyone else runs static. First-mover advantage for any competitor that invests in video.</div>
+    </div>
+
+    <div class="pattern-card" data-emoji="🇬🇪">
+      <div class="pattern-label">Language Signal</div>
+      <div class="pattern-title">Georgian-only copy confirmed across all 6 competitors</div>
+      <div class="pattern-body">Not a single English-primary ad in the full set. The Georgian-speaking parent or reader is the universal target. English-language copy has zero role in this market's paid acquisition.</div>
+    </div>
+
+    <div class="pattern-card" data-emoji="💬">
+      <div class="pattern-label">Platform Anomaly</div>
+      <div class="pattern-title">Palitra L favors Facebook + Messenger over Instagram</div>
+      <div class="pattern-body">Most of their ads run Facebook/Messenger only, skipping Instagram. Unusual placement choice in 2026 — may signal an older demographic target, or deliberate cost efficiency.</div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM GRID: Study cards + Open Questions -->
+  <div class="section-label reveal">Deep dives &amp; open questions</div>
+  <div class="bottom-grid reveal">
+
+    <!-- WHAT TO STUDY -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Creatives to Study</div>
+        <div class="card-meta">High-signal ads worth pulling apart</div>
+      </div>
+      <div class="study-list">
+
+        <div class="study-item">
+          <div class="study-header">
+            <div class="study-id">#688406637668355</div>
+            <div class="study-duration dur-long">57 days · ACTIVE</div>
+          </div>
+          <div class="study-advertiser">Palitra L Publishing</div>
+          <div class="study-title">"How to become a website subscriber" — educational video explainer</div>
+          <div class="study-why">Runs 57 days on Facebook only. Teaches the sign-up process rather than making a discount offer. Educational hook, not promotional. If it converts at this duration it means the audience has friction around subscription sign-up — and removing that friction is the value prop. What does the video show? What objection does it overcome? Why no Instagram?</div>
+          <div class="study-tags">
+            <span class="tag t-sub">Subscription</span>
+            <span class="tag t-vid">Video</span>
+            <span class="tag t-edu">Educational hook</span>
+          </div>
+        </div>
+
+        <div class="study-item">
+          <div class="study-header">
+            <div class="study-id">#2041928350069514</div>
+            <div class="study-duration dur-med">15 days · ACTIVE</div>
+          </div>
+          <div class="study-advertiser">Biblusi</div>
+          <div class="study-title">1+1 Wignebi Batumshi carousel — "for Biblusi's loyal readers"</div>
+          <div class="study-why">Biblusi's longest-running current creative. Deployed across 5 platforms: Facebook, Instagram, Audience Network, WhatsApp, Threads. The headline frames it as a loyalty benefit, not a raw discount — "for Biblusi's loyal readers" is social proof and belonging, not price. At 15 days it is their current winner. How is the carousel structured? What are the 3+ frames? What is the landing page experience?</div>
+          <div class="study-tags">
+            <span class="tag t-1plus1">1+1 Bundle</span>
+            <span class="tag t-caro">Carousel</span>
+            <span class="tag t-loyal">Loyalty hook</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- OPEN QUESTIONS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Open Questions</div>
+        <div class="card-meta">Investigate before next scan</div>
+      </div>
+      <div class="questions-list">
+
+        <div class="q-item">
+          <div class="q-num">01</div>
+          <div class="q-content">
+            <div class="q-title">Will Litbox scale or go dark?</div>
+            <div class="q-desc">Biblusi's subscription box launch is 1 day old. 3 ads with celebrity endorsement suggests a real strategic push — but it could be a soft launch. Run duration in 7–14 days will be the signal.</div>
+            <div class="q-action">→ Check again on 2026-05-21</div>
+          </div>
+        </div>
+
+        <div class="q-item">
+          <div class="q-num">02</div>
+          <div class="q-content">
+            <div class="q-title">Where did Artanuji go?</div>
+            <div class="q-desc">Last Meta campaign visible: January 2024. Are they entirely off paid social, running only organically, or shifted to Google or TikTok? Complete absence for 16+ months is unusual.</div>
+            <div class="q-action">→ Check their Facebook page organically · Google Ads transparency</div>
+          </div>
+        </div>
+
+        <div class="q-item">
+          <div class="q-num">03</div>
+          <div class="q-content">
+            <div class="q-title">What is Palitra L's distributor network model?</div>
+            <div class="q-desc">Three ads recruiting "book distributors" have run since October 2025 — 218 days. Are these MLM-style resellers, retail channel partners, or school/library buyers? At 218-day duration it is working.</div>
+            <div class="q-action">→ Click the landing page from the ad · check palitral.ge/distributors</div>
+          </div>
+        </div>
+
+        <div class="q-item">
+          <div class="q-num">04</div>
+          <div class="q-content">
+            <div class="q-title">Did Intelekti's flash sale work?</div>
+            <div class="q-desc">The May 15 · 15:00–20:00 · 15 GEL/book sale concluded yesterday. Did they run a follow-up ad? Did traffic to intelekti.ge spike? A follow-up ad would confirm the mechanic converted.</div>
+            <div class="q-action">→ Check their Meta page for new ads today · run next scan May 16</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer reveal">
+    <p>Sulakauri Publishing · Competitive Intelligence · <span>2026-05-14</span> · Generated by Claude Code</p>
+    <p style="margin-top:6px">Data source: Meta Ad Library via Apify · <span>126 ads · 6 advertisers · country=GE</span></p>
+  </div>
+
+</main>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Stagger KPI cards
+  document.querySelectorAll('.kpi').forEach((el, i) => {
+    el.style.transitionDelay = (i * 60) + 'ms';
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
+
+  // Animate duration bars on scroll
+  const barObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.dur-fill').forEach(bar => {
+          const w = bar.style.width;
+          bar.style.width = '0';
+          requestAnimationFrame(() => {
+            bar.style.transition = 'width .8s cubic-bezier(.4,0,.2,1)';
+            bar.style.width = w;
+          });
+        });
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.duration-chart').forEach(el => barObserver.observe(el));
+</script>
+
+</body>
+</html>
